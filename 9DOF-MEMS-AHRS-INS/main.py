@@ -662,16 +662,13 @@ class Sorting(Processor):
             plot_data(self.original_data)
             print(self.original_data)
             plot_data(self.plot_lowpass)
-            print(self.plot_lowpass)
-            
+            print(self.plot_lowpass)            
             plot_data(self.plot_resection)#self.plot_resection
-            print(self.plot_resection)
-            
+            print(self.plot_resection)            
             #plot_data(self.plot_interp)
             #print(self.plot_interp)
             print(f'self.cross_value: {self.cross_value}')'''
-            #plot_data(self.plot_lowpass)
-            
+            #plot_data(self.plot_lowpass)            
             #plot_data(self.data)
             #调试部分
             print(self.set_para)
@@ -699,7 +696,6 @@ class Strength(Sorting):
             self.send_command()
 #-----------------------------------------------------------------------------
 #--------------------------------------------------------------------------------------------------------
-            
 def plot_data(data):
     #file_name = str(data)
     plt.figure(figsize=(15,8))
