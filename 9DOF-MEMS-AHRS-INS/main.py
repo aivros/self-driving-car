@@ -52,8 +52,7 @@ class Scanffold(object):
            print('找不到串口')
         else:
             for i in range(0,len(port_list)):
-                print(port_list[i])      
-                
+                print(port_list[i])                      
         self.ser = serial.Serial('COM5', 115200)      
         write = '{\"type\":\"toy\",\"func\":\"search\"};\r\n'
         #print(write)
@@ -62,7 +61,6 @@ class Scanffold(object):
         self.ser.write(search)
 
     def line_to_dataframe(self):
-
         lenth_line = len(self.serial_data)/4
         if str(lenth_line).isdigit() and lenth_line != 1:
             line_ = []
@@ -193,12 +191,7 @@ class Scanffold(object):
         vibration_level=3
         airbag_level=0
         return vibration_level, airbag_level
-    
-    
-    
-    
-    
-    
+   
     def toEuler(self, quat):
         #from paper: "Adaptive Filter for a Miniature MEMS Based Attitude and
         #Heading Reference System" by Wang et al, IEEE.
@@ -304,8 +297,7 @@ class Parameter(object):
 class Processor(Parameter):
     def __init__(self):
         self.data = [0] * 60
-
-        self.original_data = [0] * 60#------------------------------------------------------------------优化
+        self.original_data = [0] * 60
         self.crosszero_boolean = False
         self.up_down = 0
         #self.original_up_down = [0] * 15
@@ -314,8 +306,6 @@ class Processor(Parameter):
         #self.previous_data = [0] * 15
         self.previous_cross_data = [0] * 15
         self.cross_value = 0
-        
-        
         self.plot_lowpass = 0
         self.plot_interp = 0
         self.plot_resection = 0
@@ -355,19 +345,12 @@ class Processor(Parameter):
         #print(data_mean)
         return data_mean
 
-
-
     def noise_check(self, data):
         if data.any():
             return True
 
         else:
             return False
-
-
-
-
-
 
     def data_resection(self, hig_low, threshold): #A #self.data读取类型:一维数组, 返回类型:一维数组
         #数据切除
@@ -394,11 +377,9 @@ class Processor(Parameter):
             numpy_array[abs(numpy_array) > threshold] = 0
         else:
             numpy_array = np.array(data)
-            numpy_array[abs(numpy_array) < threshold] = 0
-            
+            numpy_array[abs(numpy_array) < threshold] = 0            
         #print(f'numpy_array: {numpy_array}')
-        data = numpy_array
-        
+        data = numpy_array        
         #self.plot_resection = self.data.copy()
         #print(f'self.plot_resection: {self.plot_resection}')
         return data
@@ -408,8 +389,6 @@ class Processor(Parameter):
         x = np.asanyarray(data)
         y = pi * np.where(x == 0, 1.0e-20, x)
         return np.sin(y)/y
-
-
 
     def low_filter(self):#B   lowpass_blackman_sinc
         #低通虑波
@@ -427,10 +406,8 @@ class Processor(Parameter):
         h = h * w
         h = h / np.sum(h)
         s = np.convolve(s, h)
-        self.data = s[26:326] #一维数组s
-        
-        self.plot_lowpass = self.data.copy()
-        
+        self.data = s[26:326] #一维数组s       
+        self.plot_lowpass = self.data.copy()        
         return 
     
     def low_filter_(self, data):#B   lowpass_blackman_sinc
@@ -449,12 +426,9 @@ class Processor(Parameter):
         h = h * w
         h = h / np.sum(h)
         s = np.convolve(s, h)
-        data = s[26:326] #一维数组s
-        
-        #self.plot_lowpass = self.data.copy()
-        
-        return data
-    
+        data = s[26:326] #一维数组s        
+        #self.plot_lowpass = self.data.copy()        
+        return data   
 
     def zero_scope_interp(self, value_list ,zero_scope_extremum):
         interp_list_all = []
@@ -465,8 +439,7 @@ class Processor(Parameter):
                 interp_ = zero_scope_extremum[i][0] + mean_num
                 interp_list.append(interp_)
             interp_list_all.append(interp_list)
-        return interp_list_all
-     
+        return interp_list_all     
 
     def zero_interp_index(self, zero_scope):
         interp_index_list = []
@@ -477,8 +450,7 @@ class Processor(Parameter):
                 index_list.append(index_)
             interp_index_list.append(index_list)
         return interp_index_list
-
-    
+   
     def zero_scope(self, index_list, nonzero_index):
         zero_scope_ = []
         for i in index_list:
@@ -486,14 +458,12 @@ class Processor(Parameter):
             zero_scope_.append(ii)
         return zero_scope_
 
-
     def zero_scope_extremum(self, data, zero_scope):
         zero_scope_extremum_ = []
         for i in zero_scope:
             ii = [data[i[0]], data[i[1]]]
             zero_scope_extremum_.append(ii)
         return zero_scope_extremum_
-
 
     def interp_1d(self):#M   #self.data读取类型:一维数组, 返回类型:一维数组
         #线性插值
@@ -506,7 +476,6 @@ class Processor(Parameter):
             if value != 1:
                 index_list.append(index)
                 value_list.append(value)
-
         zero_scope = self.zero_scope(index_list, nonzero_index)#[[nonzero_index[i], nonzero_index[i+1]] for i in index_list]
         zero_scope_extremum = self.zero_scope_extremum(self.data, zero_scope)#[[self.data[i[0]], self.data[i[1]]] for i in zero_scope]
 
@@ -515,32 +484,17 @@ class Processor(Parameter):
         zero_interp_index = self.zero_interp_index(zero_scope)
         #zero_interp_index = [[v[0] + 1 + x for x in range(v[1] - v[0] -1)] for v in zero_scope]
         for index, value in enumerate(zero_interp_index):
-            self.data[value] = zero_scope_interp[index]
-            
-            
-        self.plot_interp = self.data.copy()
-        
+            self.data[value] = zero_scope_interp[index]            
+        self.plot_interp = self.data.copy()        
         return
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 
     def crosszero(self, data_length):#E#self.data读取类型:一维数组, 返回类型:无(void)
         #跨零检测
         self.data = self.data[-data_length :]
         self.original_cross = self.original_data[-data_length :]
         cross_zero = np.sign(self.data) 
-        self.cross_zero = np.where(np.diff(cross_zero))[0]
-        
+        self.cross_zero = np.where(np.diff(cross_zero))[0]        
         self.plot_cross = self.data.copy()
-        
         return self.cross_zero
 
     def crosszero_rate(self, data_length=60):#K
@@ -549,11 +503,8 @@ class Processor(Parameter):
         self.cross_rate = len(data_cross) / data_length
         return self.cross_rate
 
-
-
     def peak_check(self, data):
         pass
-
 
     def sim_data(self):#F#读取类型:一维数组, 返回类型:一维数组
         #检测跨零方向,定义去重检测变量
@@ -603,32 +554,25 @@ class Sorting(Processor):
         #print(f'data_mean: {data_mean}')
         data_cross = self.crosszero(data_length=20)
         data_cross_rate = len(data_cross) / 20
-        #print(f'data_cross_rate: {data_cross_rate}')
-        
+        #print(f'data_cross_rate: {data_cross_rate}')        
         del self.noise_mean[0]
         self.noise_mean.append(data_mean)
         value_noise = self.get_mean(self.noise_mean, length=10)
-        #print(f'value_noise: {value_noise}')
-        
+        #print(f'value_noise: {value_noise}')        
         del self.noise_rate[0]
         self.noise_rate.append(data_cross_rate)
         #print(self.noise_rate)
         rate_noise = self.get_mean(self.noise_rate, length=10)
-        #print(f'rate_noise: {rate_noise}')
-        
+        #print(f'rate_noise: {rate_noise}')        
         noise_vib = self.noise_suppression(value_noise, rate_noise)
         #print(f'noise_vib: {noise_vib}')
-        
-        self.set_para = self.get_status()
-        
-        if self.set_para != '00':
-            
+        self.set_para = self.get_status()        
+        if self.set_para != '00':            
             lowpass_data = self.low_filter_(self.data)
             lowcut_data = self.data_resection_(lowpass_data, 'l', 1200)
             noise_check = self.noise_check(lowcut_data)
         else:
-            noise_check = True
-        
+            noise_check = True        
         if noise_vib and noise_check:
             if data_mean != 0:
                 if self.sli_stren == 'slight':
@@ -678,7 +622,7 @@ class Sorting(Processor):
         self.set_status = Parameter.main_param[self.set_para]
         return
 
-    def data_proc(self):#字典获取和数据准备---------------------------------------------------------------------优化
+    def data_proc(self):#字典获取和数据准备
         data_length = self.set_status[self.sli_stren]['data']['data_length']
         self.data_array = Parameter.fifo_data_x[-data_length :]  #循序初次数据
         return
@@ -689,9 +633,9 @@ class Sorting(Processor):
 
     def process_control(self):#处理流程
         proc = self.set_status[self.sli_stren]['proc']
-        self.original_data = self.data_array#-----------------------------------------------------------------优化
+        self.original_data = self.data_array
         #self.original_up_down = self.data_array
-        self.data =  self.data_array#-------------------------------------------------------------------------优化
+        self.data =  self.data_array
         for i in proc:
             if i == 'A':
                 self.data_resection(self.param['data_resection']['hig_low'], self.param['data_resection']['threshold'])#data, hig_low, threshold
@@ -793,22 +737,18 @@ def main():
     strength = Strength()
     try:
         while True:
-
             serial_data = scanffold.serial_stream()
             vibration_level, airbag_level = scanffold.detected_status()
             if serial_data == 0:
                 continue
             if len(serial_data) != 4:
                 continue
-
             #Parameter.quaternion = serial_data
-
             Parameter.stream_data = serial_data
             Parameter.vibrate_data = vibration_level
             Parameter.airbag_data = airbag_level
             parameter.fifo_main()
             strength.strength()
-
     except KeyboardInterrupt:
         print('interrupted!')
     #打印检测结果
