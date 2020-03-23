@@ -16,7 +16,7 @@ from matplotlib import pyplot as plt
 # -----------------------------------------------------------------------------
 #原型脚手架
 class Scanffold(object):
-    path = 'D://lovense//MAX_toys//MPU6500_project//demo//bluetooth_data//backup//xxx//'    
+    path = 'path'    
     port_list = list(serial.tools.list_ports.comports())
     if len(port_list) == 0:
        print('找不到串口')
