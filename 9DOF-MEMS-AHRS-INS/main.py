@@ -110,8 +110,7 @@ class Scanffold(object):
                     #print(f'{len(jsonData)}jsonData: {jsonData}')
                     if len(jsonData) > 150:
                         jsonData = jsonData[-100:]
-                    #print(f'{len(jsonData)},jsonData  : {jsonData}') 
-                
+                    #print(f'{len(jsonData)},jsonData  : {jsonData}')                 
                     index_one = [i.start() for i in re.finditer(self.search_key, jsonData)]
                     #print(index_one)
                     if len(index_one) == 1:
@@ -119,9 +118,7 @@ class Scanffold(object):
                             index_two = jsonData.index('"}}')
                         elif '"}' in jsonData:
                             index_two = jsonData.index('"}')
-    
                         serial_data = jsonData[index_one[0] + 7 : index_two]
-                        
                         serial_data = re.compile(self.par).findall(serial_data)
                         serial_data = list(map(int, serial_data))
                         #data_dict = json.loads(jsonData)
@@ -132,9 +129,7 @@ class Scanffold(object):
                         self.str_list = []
                         self.str_list_ = []
                         self.bb = int(round(time.time() * 1000))
-
-                        self.line_to_dataframe()
-                        
+                        self.line_to_dataframe()                        
                     elif len(index_one) > 1:
                         self.str_list = []
                         self.str_list_ = []  
@@ -148,7 +143,6 @@ class Scanffold(object):
                 serial_data = 0
         else:
             serial_data = 0
-
         return serial_data   
 
     def write_csv(self):            
@@ -186,8 +180,7 @@ class Scanffold(object):
             airbag_level = 0
         else:
             vibration_level = 0
-            airbag_level = 0
-            
+            airbag_level = 0            
         vibration_level=3
         airbag_level=0
         return vibration_level, airbag_level
@@ -217,19 +210,14 @@ class Scanffold(object):
     
     def gravity_compensate(self, q, acc):
         g = [0.0, 0.0, 0.0]
-
         # get expected direction of gravity
         g[0] = 2 * (q[1] * q[3] - q[0] * q[2])
         g[1] = 2 * (q[0] * q[1] + q[2] * q[3])
         g[2] = q[0] * q[0] - q[1] * q[1] - q[2] * q[2] + q[3] * q[3]
-
         # compensate accelerometer readings with the expected direction of gravity
         return [acc[0] - g[0], acc[1] - g[1], acc[2] - g[2]]
 
 #------------------------------------------------------------------------------
-
-
-
 #剥离主体
 #------------------------------------------------------------------------------
 #参数空间
@@ -269,10 +257,8 @@ class Parameter(object):
     accelerometer_x = [0] * 300
     accelerometer_y = [0] * 300
     accelerometer_z = [0] * 300
-    quaternion = [0] * 4
-    
-    fifo_data_x = [0] * 100
-    
+    quaternion = [0] * 4    
+    fifo_data_x = [0] * 100    
     test_all_sum = 0
     test_all_slight = 0
     test_all_strength = 0
@@ -348,7 +334,6 @@ class Processor(Parameter):
     def noise_check(self, data):
         if data.any():
             return True
-
         else:
             return False
 
@@ -360,11 +345,9 @@ class Processor(Parameter):
             numpy_array[abs(numpy_array) > threshold] = 0
         else:
             numpy_array = np.array(self.data)
-            numpy_array[abs(numpy_array) < threshold] = 0
-            
+            numpy_array[abs(numpy_array) < threshold] = 0            
         #print(f'numpy_array: {numpy_array}')
-        self.data = numpy_array
-        
+        self.data = numpy_array        
         self.plot_resection = self.data.copy()
         #print(f'self.plot_resection: {self.plot_resection}')
         return
@@ -478,7 +461,6 @@ class Processor(Parameter):
                 value_list.append(value)
         zero_scope = self.zero_scope(index_list, nonzero_index)#[[nonzero_index[i], nonzero_index[i+1]] for i in index_list]
         zero_scope_extremum = self.zero_scope_extremum(self.data, zero_scope)#[[self.data[i[0]], self.data[i[1]]] for i in zero_scope]
-
         zero_scope_interp = self.zero_scope_interp(value_list ,zero_scope_extremum)
         #zero_scope_interp = [[zero_scope_extremum[i][0] + (zero_scope_extremum[i][1] - zero_scope_extremum[i][0])/v*(x+1) for x in range(v-1)] for i, v in enumerate(value_list)]
         zero_interp_index = self.zero_interp_index(zero_scope)
@@ -670,8 +652,7 @@ class Sorting(Processor):
         else:
             up_down = '下'
             style = '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
-        if  type(self.data) == type(1) and self.data == 0 and self.cross_value:
-            
+        if  type(self.data) == type(1) and self.data == 0 and self.cross_value:           
             self.cross_value = 0
             self.vibration_command = True
             self.previous_cross_data = self.original_data[-15:]
@@ -709,7 +690,6 @@ class Sorting(Processor):
 class Strength(Sorting):
     def __init__(self):
         Sorting.__init__(self, 'strength')
-
     def strength(self):
         if self.pre_process():
             self.sorting_func()
